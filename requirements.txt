@@ -7,12 +7,6 @@ scikit-learn
 seaborn
 keras
 torch
-scipy
-statsmodels
-xgboost
-lightgbm
-nltk
-spacy
 transformers
 joblib
 jupyter
@@ -25,10 +19,6 @@ opencv-python
 sympy
 pillow
 plotly
-dash
-networkx
-plotnine
 pytorch-lightning
 fastai
-scikit-image
-seaborn
+scikit-imag
