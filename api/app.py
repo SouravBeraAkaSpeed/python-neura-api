@@ -62,11 +62,23 @@ def execute():
     except Exception as e:
         output["error"] = f"An error occurred: {str(e)}"
 
-    return jsonify(output)
+
+    response = jsonify(output)
+    allowed_origins = ["http://localhost:3001", "https://www.toil-labs.com","https://www.neura.toil-labs.com"]
+    origin = request.headers.get("Origin")
+
+    if origin in allowed_origins:
+        response.headers.add('Access-Control-Allow-Origin', origin)
+
+    # Allow other necessary headers
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+
+    return response
 
 # Start the server when this script is executed directly
 if __name__ == "__main__":
     try:
         app.run(debug=True, threaded=True)
     except Exception as e:
-        print(f"Error occurred while starting the Flask app: {e}")
+        print(f"Error occurred while starting the Data Analysis process: {e}")
