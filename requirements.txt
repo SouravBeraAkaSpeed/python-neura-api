@@ -4,8 +4,4 @@ pandas
 numpy
 seaborn
 scikit-learn
-scipy
-statsmodels
-plotly
-openpyxl
 requests
