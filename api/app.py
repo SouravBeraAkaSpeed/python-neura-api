@@ -6,17 +6,19 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import requests
+from flask_cors import CORS  # Import flask-cors for CORS handling
 
 # Set the backend for matplotlib to avoid Tkinter-related issues
 plt.switch_backend('Agg')
 
 # Create a Flask app
 app = Flask(__name__)
+CORS(app, origins=["http://localhost:3001", "https://www.toil-labs.com","https://www.neura.toil-labs.com"])
 
 # Define a route for the home page
 @app.route("/", methods=["GET"])
 def home():
-    return jsonify({"message": "Hello, Vercel!"})
+    return jsonify({"message": "Hello, From Neura Data Analysis Tool!"})
 
 # Define a route to execute Python code
 @app.route("/execute", methods=["POST"])
