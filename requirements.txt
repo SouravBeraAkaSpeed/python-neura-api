@@ -1,5 +1,4 @@
 flask
-flask-lambda
 matplotlib
 pandas
 numpy
@@ -8,20 +7,5 @@ scikit-learn
 scipy
 statsmodels
 plotly
-bokeh
-jupyter
 openpyxl
-xlrd
-pillow
-sqlalchemy
 requests
-psycopg2
-tensorflow
-keras
-pytorch
-nltk
-spacy
-plotnine
-altair
-dash
-pyod
