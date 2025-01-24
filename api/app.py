@@ -3,6 +3,7 @@ import base64
 import sys
 from flask import Flask, request, jsonify
 import matplotlib.pyplot as plt
+import subprocess
 
 # Set the backend for matplotlib to avoid Tkinter-related issues
 plt.switch_backend('Agg')
