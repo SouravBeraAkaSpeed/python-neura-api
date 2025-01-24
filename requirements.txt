@@ -7,7 +7,7 @@ scikit-learn
 seaborn
 tensorflow
 keras
-pytorch
+torch
 scipy
 statsmodels
 xgboost
