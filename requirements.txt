@@ -21,4 +21,4 @@ pillow
 plotly
 pytorch-lightning
 fastai
-scikit-imag
+scikit-image
