@@ -1,0 +1,11 @@
+__pycache__/
+*.log
+*.csv
+*.json
+*.ipynb
+*.xlsx
+*.zip
+*.tar
+*.gz
+*.pickle
+*.db
