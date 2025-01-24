@@ -31,5 +31,5 @@ networkx
 plotnine
 pytorch-lightning
 fastai
-skimage
+scikit-image
 seaborn
