@@ -3,10 +3,8 @@ import base64
 import sys
 from flask import Flask, request, jsonify
 import matplotlib.pyplot as plt
-import subprocess
 import pandas as pd
 import numpy as np
-
 import requests
 
 # Set the backend for matplotlib to avoid Tkinter-related issues
