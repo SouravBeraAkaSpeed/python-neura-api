@@ -14,14 +14,54 @@ plt.switch_backend('Agg')
 
 # Create a Flask app
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:3001", "https://www.toil-labs.com","https://www.neura.toil-labs.com"])
+CORS(app, origins=["http://localhost:3001",
+     "https://www.toil-labs.com", "https://www.neura.toil-labs.com"])
 
 # Define a route for the home page
+
+
 @app.route("/", methods=["GET"])
 def home():
     return jsonify({"message": "Hello, From Neura Data Analysis Tool!"})
 
+
+@app.route("/generate-image", methods=["POST"])
+def generate_image():
+    data = request.json
+    prompt = data.get("prompt", "")
+
+    if not prompt:
+        return jsonify({"error": "Prompt is required"}), 400
+
+    try:
+        # Run the Python image generation script
+        process = subprocess.run(
+            # Adjust this based on your script
+            ["python", "imagegen.py", prompt],
+            capture_output=True, text=True, check=True
+        )
+
+        # Expecting the script to return the image path
+        encoded_image_base64 = process.stdout.strip()
+
+        response = jsonify({"image": encoded_image_base64})
+
+    except subprocess.CalledProcessError as e:
+        response = jsonify(
+            {"error": f"Image generation failed: {str(e)}"}), 500
+
+    # Handle CORS
+    allowed_origins = ["http://localhost:3001",
+                       "https://www.toil-labs.com", "https://www.neura.toil-labs.com"]
+    origin = request.headers.get("Origin")
+    if origin in allowed_origins:
+        response.headers.add("Access-Control-Allow-Origin", origin)
+
+    return response
+
 # Define a route to execute Python code
+
+
 @app.route("/execute", methods=["POST"])
 def execute():
     code = request.json.get("code", "")
@@ -33,7 +73,8 @@ def execute():
         sys.stdout = captured_output  # Redirect stdout to capture prints
 
         # Prepare the environment to execute code
-        exec_globals = {"plt": plt}  # Provide matplotlib in the execution context
+        # Provide matplotlib in the execution context
+        exec_globals = {"plt": plt}
         exec_locals = {}
 
         # Execute the code
@@ -58,23 +99,26 @@ def execute():
         sys.stdout = sys.__stdout__
 
         # Capture the result of the code (if any variable or return is present)
-        output["stdout"] = output["stdout"] or exec_locals.get("result", "Execution completed successfully.")
+        output["stdout"] = output["stdout"] or exec_locals.get(
+            "result", "Execution completed successfully.")
     except Exception as e:
         output["error"] = f"An error occurred: {str(e)}"
 
-
     response = jsonify(output)
-    allowed_origins = ["http://localhost:3001", "https://www.toil-labs.com","https://www.neura.toil-labs.com"]
+    allowed_origins = ["http://localhost:3001",
+                       "https://www.toil-labs.com", "https://www.neura.toil-labs.com"]
     origin = request.headers.get("Origin")
 
     if origin in allowed_origins:
         response.headers.add('Access-Control-Allow-Origin', origin)
 
     # Allow other necessary headers
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Headers',
+                         'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
 
     return response
+
 
 # Start the server when this script is executed directly
 if __name__ == "__main__":
