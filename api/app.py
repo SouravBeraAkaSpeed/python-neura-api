@@ -25,39 +25,6 @@ def home():
     return jsonify({"message": "Hello, From Neura Data Analysis Tool!"})
 
 
-@app.route("/generate-image", methods=["POST"])
-def generate_image():
-    data = request.json
-    prompt = data.get("prompt", "")
-
-    if not prompt:
-        return jsonify({"error": "Prompt is required"}), 400
-
-    try:
-        # Run the Python image generation script
-        process = subprocess.run(
-            # Adjust this based on your script
-            ["python", "imagegen.py", prompt],
-            capture_output=True, text=True, check=True
-        )
-
-        # Expecting the script to return the image path
-        encoded_image_base64 = process.stdout.strip()
-
-        response = jsonify({"image": encoded_image_base64})
-
-    except subprocess.CalledProcessError as e:
-        response = jsonify(
-            {"error": f"Image generation failed: {str(e)}"}), 500
-
-    # Handle CORS
-    allowed_origins = ["http://localhost:3001",
-                       "https://www.toil-labs.com", "https://www.neura.toil-labs.com"]
-    origin = request.headers.get("Origin")
-    if origin in allowed_origins:
-        response.headers.add("Access-Control-Allow-Origin", origin)
-
-    return response
 
 # Define a route to execute Python code
 

@@ -4,5 +4,3 @@ pandas
 numpy
 requests
 flask_cors
-google-cloud-aiplatform
-google-auth
