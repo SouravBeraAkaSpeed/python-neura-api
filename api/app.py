@@ -8,6 +8,7 @@ import numpy as np
 import requests
 from flask_cors import CORS  # Import flask-cors for CORS handling
 import subprocess
+import seaborn as sns
 
 # Set the backend for matplotlib to avoid Tkinter-related issues
 plt.switch_backend('Agg')
