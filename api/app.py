@@ -9,8 +9,9 @@ import requests
 from flask_cors import CORS  # Import flask-cors for CORS handling
 import subprocess
 import seaborn as sns
-import comtypes.client
 import os
+import aspose.slides as slides
+os.environ["MPLCONFIGDIR"] = "/tmp"
 
 # Set the backend for matplotlib to avoid Tkinter-related issues
 plt.switch_backend('Agg')
@@ -31,36 +32,29 @@ def home():
 @app.route("/convert-ppt-to-pdf", methods=["POST"])
 def convert_ppt_to_pdf():
     try:
+        # Step 1: Get File URI
         data = request.json
         file_uri = data.get("fileUri")
         if not file_uri:
             return jsonify({"error": "fileUri is required"}), 400
 
-        # Download the PPTX file
+        # Step 2: Download the PPT/PPTX file
         pptx_filename = "temp_presentation.pptx"
         pdf_filename = "temp_presentation.pdf"
 
-        response = requests.get(file_uri)
+        response = requests.get(file_uri, stream=True)
         if response.status_code == 200:
             with open(pptx_filename, "wb") as f:
-                f.write(response.content)
+                for chunk in response.iter_content(chunk_size=1024):
+                    f.write(chunk)
         else:
             return jsonify({"error": "Failed to download the file"}), 400
 
-        # Initialize COM
-        comtypes.CoInitialize()
+        # Step 3: Convert PPTX to PDF using Aspose.Slides
+        with slides.Presentation(pptx_filename) as presentation:
+            presentation.save(pdf_filename, slides.export.SaveFormat.PDF)
 
-        # Convert to PDF using Microsoft PowerPoint
-        powerpoint = comtypes.client.CreateObject("PowerPoint.Application")
-        powerpoint.Visible = 1
-        presentation = powerpoint.Presentations.Open(
-            os.path.abspath(pptx_filename), WithWindow=False)
-        presentation.SaveAs(os.path.abspath(
-            pdf_filename), 32)  # 32 = PDF format
-        presentation.Close()
-        powerpoint.Quit()
-
-        # Read PDF and encode in base64
+        # Step 4: Read PDF and encode in base64
         with open(pdf_filename, "rb") as pdf_file:
             pdf_base64 = base64.b64encode(pdf_file.read()).decode("utf-8")
 
@@ -72,10 +66,9 @@ def convert_ppt_to_pdf():
             "base64": pdf_base64,
             "mimeType": "application/pdf"
         })
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-
 # Define a route to execute Python code
 
 @app.route("/execute", methods=["POST"])
