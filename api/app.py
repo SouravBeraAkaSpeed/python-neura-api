@@ -9,6 +9,8 @@ import requests
 from flask_cors import CORS  # Import flask-cors for CORS handling
 import subprocess
 import seaborn as sns
+import comtypes.client
+import os
 
 # Set the backend for matplotlib to avoid Tkinter-related issues
 plt.switch_backend('Agg')
@@ -26,9 +28,55 @@ def home():
     return jsonify({"message": "Hello, From Neura Data Analysis Tool!"})
 
 
+@app.route("/convert-ppt-to-pdf", methods=["POST"])
+def convert_ppt_to_pdf():
+    try:
+        data = request.json
+        file_uri = data.get("fileUri")
+        if not file_uri:
+            return jsonify({"error": "fileUri is required"}), 400
+
+        # Download the PPTX file
+        pptx_filename = "temp_presentation.pptx"
+        pdf_filename = "temp_presentation.pdf"
+
+        response = requests.get(file_uri)
+        if response.status_code == 200:
+            with open(pptx_filename, "wb") as f:
+                f.write(response.content)
+        else:
+            return jsonify({"error": "Failed to download the file"}), 400
+
+        # Initialize COM
+        comtypes.CoInitialize()
+
+        # Convert to PDF using Microsoft PowerPoint
+        powerpoint = comtypes.client.CreateObject("PowerPoint.Application")
+        powerpoint.Visible = 1
+        presentation = powerpoint.Presentations.Open(
+            os.path.abspath(pptx_filename), WithWindow=False)
+        presentation.SaveAs(os.path.abspath(
+            pdf_filename), 32)  # 32 = PDF format
+        presentation.Close()
+        powerpoint.Quit()
+
+        # Read PDF and encode in base64
+        with open(pdf_filename, "rb") as pdf_file:
+            pdf_base64 = base64.b64encode(pdf_file.read()).decode("utf-8")
+
+        # Clean up files
+        os.remove(pptx_filename)
+        os.remove(pdf_filename)
+
+        return jsonify({
+            "base64": pdf_base64,
+            "mimeType": "application/pdf"
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 # Define a route to execute Python code
-
 
 @app.route("/execute", methods=["POST"])
 def execute():
