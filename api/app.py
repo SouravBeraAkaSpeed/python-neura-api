@@ -19,7 +19,7 @@ plt.switch_backend('Agg')
 # Create a Flask app
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:3001",
-     "https://www.toil-labs.com", "https://www.neura.toil-labs.com"])
+     "https://www.toil-labs.com", "https://www.neura.toil-labs.com","https://www.chatmrt.com"])
 
 # Define a route for the home page
 
