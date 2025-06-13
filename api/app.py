@@ -18,7 +18,7 @@ plt.switch_backend('Agg')
 
 # Create a Flask app
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:3001",
+CORS(app, origins=["http://localhost:3000",
      "https://www.toil-labs.com", "https://www.neura.toil-labs.com","https://www.chatmrt.com"])
 
 # Define a route for the home page
@@ -76,7 +76,7 @@ def execute():
         output["error"] = f"An error occurred: {str(e)}"
 
     response = jsonify(output)
-    allowed_origins = ["http://localhost:3001",
+    allowed_origins = ["http://localhost:3000",
                        "https://www.toil-labs.com", "https://www.neura.toil-labs.com"]
     origin = request.headers.get("Origin")
 
